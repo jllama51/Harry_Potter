@@ -1,5 +1,16 @@
+CODE LAYOUT for refference not working code 
+
+
+
+------ I created a context to determine where to route the calls. In this case I used "ivr"
+
+
+
 require('dotenv').config();
 const { Voice } = require('@signalwire/realtime-api')
+
+
+-------TOKENS
 
 const projectId = process.env.SIGNALWIRE_PROJECT_ID;
 const token = process.env.SIGNALWIRE_TOKEN;
@@ -10,6 +21,11 @@ const client = new Voice.Client({
   token: token,
   contexts: ["ivr"],
 });
+
+
+
+---------  I then created an event handler for receiving calls.
+
 
 console.log("started");
 
@@ -22,6 +38,17 @@ client.on("call.received", async (call) => {
         } catch (error) {
             console.error("Error answering inbound call", error);
         }
+
+
+
+-----------3) Next I created a Playlist where the first TTS reads out 4 Options: (Note: before starting the TTS added a sound to start the call, 
+              in this case I added a forest .wav. this was because I had a hard time finding a train sound...)         
+                  Press 1 - TTS           
+                  Press 2 - event handler (to record caller data from voice to text)          
+                  Press 3  - a call forward to a verified number (in this case it will go to my cell phone)          
+                  Press 0 - a re-prompt that just repeats the first TTS (repeating the menu options) 
+
+
 
         const playlist = new Voice.Playlist({ volume: 1.0 })
             .add(
@@ -41,8 +68,18 @@ client.on("call.received", async (call) => {
                 })
             );
 
+
+----------------   hold prompt for responce (dial number)
+
+
         await promptCallOptions(call, playlist);
     });
+
+
+----------------   I need to Prompt the caller and I wanted it to set it to respond to dial pad digits and not speech. I set the input to digits instead of speech and indicated a terminator at 1 digit. 
+
+
+
 
 const promptCallOptions = async (call, playlist) => {
   try {
@@ -56,6 +93,14 @@ const promptCallOptions = async (call, playlist) => {
 
     const { digits } = await initialPrompt.waitForResult();
 
+
+
+
+
+---------------    Press 1 - TTS  (after TTS phone will hang up    
+
+
+
     switch (digits) {
       case "1":
         const playback = await call.playTTS({
@@ -64,6 +109,11 @@ const promptCallOptions = async (call, playlist) => {
         await playback.waitForEnded();
         call.hangup();
         break;
+
+
+-------------   This starts with prompt and will record speach after text prompt is stated. 
+
+
       case "2":
         call.on("prompt.ended", (p) => {
           console.log(p.id, p.text);
@@ -83,9 +133,21 @@ const promptCallOptions = async (call, playlist) => {
           },
         });
         break;
+
+
+
+------------- Replay menue or re-start playlist TTS
+
+
+
       case "0":
         await promptCallOptions(call, playlist);
         break;
+
+
+--------------- Forward call to varrified number 
+
+
       case "3":
         const peer = await call.connectPhone({
           from: verifiedNumber,
