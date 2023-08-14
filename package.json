@@ -1,21 +1,18 @@
 {
-  "name": "signalwire",
-  "version": "0.0.1",
-  "private": true,
-  "description": "SignalWire monorepo root package.json. This package is not published to npm.",
-  "author": "SignalWire Team <open.source@signalwire.com>",
+  "name": "nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Harry_poter.js",
   "scripts": {
-    "setup": "node .scripts/setup.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "uuid": "^7.0.3"
-  },
-  "devDependencies": {
-    "@types/jest": "^25.2.1",
-    "@types/webrtc": "0.0.26",
-    "execa": "^1.0.0",
-    "fs-extra": "^7.0.1",
-    "listr": "^0.14.3",
-    "tslint": "^6.1.1"
+    "@signalwire/realtime-api": "^3.10.2",
+    "@types/node": "^18.0.6",
+    "dotenv": "^16.3.1",
+    "node-fetch": "^3.2.6"
   }
 }
